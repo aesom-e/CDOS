@@ -18,8 +18,8 @@ void fs_FormatDirectoryEntry(File* file, struct __DirectoryEntry* directoryEntry
     }
 
     // Get the times
-    Time createTime    = *file->createTime;
-    Time lastWriteTime = *file->lastWriteTime;
+    Time createTime    = file->createTime;
+    Time lastWriteTime = file->lastWriteTime;
     time_AdjustTimeZone(&createTime, -TIMEZONE_SYSTEM);
     time_AdjustTimeZone(&lastWriteTime, -TIMEZONE_SYSTEM);
 
@@ -38,7 +38,7 @@ byte fs_AddFileToParentDirectory(char* parentDirectory, File* file) {
 
     // Construct the FAT32 entry
     struct __DirectoryEntry fileEntry = {0};
-    fs_GetDirectoryEntryFromFile(file, &fileEntry);
+    fs_FormatDirectoryEntry(file, &fileEntry);
 
     Directory dir = fs_OpenDirectory(parentDirectory);
     if(!dir.__cluster) {
@@ -50,6 +50,7 @@ byte fs_AddFileToParentDirectory(char* parentDirectory, File* file) {
         dWord sector = fs_ClusterToSector(dir.__cluster);
 
         // Read all sectors in the cluster
+        int i;
         for(i=0;i<Disk.bootSector.sectorsPerCluster;i++) {
             byte* sectorBuffer = memory_Callocate(Disk.bootSector.bytesPerSector);
             fs_ATAReadSector(sector+i, sectorBuffer);
@@ -76,7 +77,6 @@ byte fs_AddFileToParentDirectory(char* parentDirectory, File* file) {
     return 0;
 }
 
-// WORK ON THIS
 void fs_UpdateDirectoryEntry(Directory* dir) {
     dWord cluster = dir->__cluster;
     byte* buffer = memory_Callocate(Disk.bootSector.bytesPerSector * Disk.bootSector.sectorsPerCluster);
@@ -85,10 +85,10 @@ void fs_UpdateDirectoryEntry(Directory* dir) {
     int i;
     for(i=0;i<dir->numFiles;i++) {
         struct __DirectoryEntry entry = {0};
-        fs_GetDirectoryEntryFromFile(file, &entry);
+        fs_FormatDirectoryEntry(&dir->files[i], &entry);
         memory_Copy((byte*)&entry, buffer+(i*32), sizeof(struct __DirectoryEntry));
     }
-    fs_ATAWriteSector(sector, buffer);
+    fs_ATAWriteSector(fs_ClusterToSector(cluster), buffer);
 
     memory_Free(buffer);
 }
@@ -169,7 +169,12 @@ ModifyReturnCode fs_RemoveFile(const char* pathRaw) {
         memory_Free(path);
         return MODIFY_INVALIDPATH;
     }
-    *lastBackSlash = 0;
+
+    // Cut the path off at after the last backslash to get the parent directory
+    // After the directory is found, the path will be put back together so the file name
+    // can be searched for
+    char fileFirstCharacter = *(lastBackSlash+1);
+    *(lastBackSlash+1) = 0;
 
     Directory dir = fs_OpenDirectory(parentPath);
     if(!dir.exists) {
@@ -177,6 +182,9 @@ ModifyReturnCode fs_RemoveFile(const char* pathRaw) {
         memory_Free(path);
         return MODIFY_INVALIDPATH;
     }
+
+    // Put the file name back together
+    *(lastBackSlash+1) = fileFirstCharacter;
 
     // Locate the file within the parent directory
     byte found = 0;

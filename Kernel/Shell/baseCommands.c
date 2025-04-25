@@ -6,6 +6,8 @@
 #include "terminal.h"
 #include "baseCommands.h"
 
+#define returnCmd(__cmd) do { memory_Free(commandName); return __cmd; } while(0)
+
 // Commands
 int cls(Command command);
 int echo(Command command);
@@ -24,60 +26,38 @@ CommandFunc shell_GetCommandFunc(Command command) {
 
     char* commandName = strlwr(command.arguments[0]);
 
-    if(strequ(commandName, "cls") || strequ(commandName, "clear")) {
-        memory_Free(commandName);
-        return cls;
-    }
+    if(strequ(commandName, "cls") || strequ(commandName, "clear"))
+        returnCmd(cls);
 
-    if(strequ(commandName, "echo")) {
-        memory_Free(commandName);
-        return echo;
-    }
+    if(strequ(commandName, "echo"))
+        returnCmd(echo);
 
-    if(strequ(commandName, "help")) {
-        memory_Free(commandName);
-        return help;
-    }
+    if(strequ(commandName, "help"))
+        returnCmd(help);
 
-    if(strequ(commandName, "halt")) {
-        memory_Free(commandName);
-        return haltCmd;
-    }
+    if(strequ(commandName, "halt"))
+        returnCmd(haltCmd);
 
-    if(strequ(commandName, "dir") || strequ(commandName, "ls")) {
-        memory_Free(commandName);
-        return dir;
-    }
+    if(strequ(commandName, "dir") || strequ(commandName, "ls"))
+        returnCmd(dir);
 
-    if(strequ(commandName, "cd")) {
-        memory_Free(commandName);
-        return cd;
-    }
+    if(strequ(commandName, "cd"))
+        returnCmd(cd);
 
-    if(strequ(commandName, "cat")) {
-        memory_Free(commandName);
-        return cat;
-    }
+    if(strequ(commandName, "cat"))
+        returnCmd(cat);
 
-    if(strequ(commandName, "make") || strequ(commandName, "touch")) {
-        memory_Free(commandName);
-        return make;
-    }
+    if(strequ(commandName, "make") || strequ(commandName, "touch"))
+        returnCmd(make);
 
-    if(strequ(commandName, "del") || strequ(commandName, "rm")) {
-        memory_Free(commandName);
-        return del;
-    }
+    if(strequ(commandName, "del") || strequ(commandName, "rm"))
+        returnCmd(del);
 
-    if(strequ(commandName, "mkdir")) {
-        memory_Free(commandName);
-        return mkdir;
-    }
+    if(strequ(commandName, "mkdir"))
+        returnCmd(mkdir);
 
-    if(strequ(commandName, "rmdir")) {
-        memory_Free(commandName);
-        return rmdir;
-    }
+    if(strequ(commandName, "rmdir"))
+        returnCmd(rmdir);
 
     memory_Free(commandName);
     return NULL;
@@ -280,6 +260,42 @@ int del(Command command) {
     if(command.numArguments < 2) {
         printf("DEL <File>\n");
         return RETURN_SUCCESS;
+    }
+
+    switch(fs_RemoveFile(command.arguments[1])) {
+        case MODIFY_SUCCESS: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Deleted %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_INVALIDPATH: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Invalid path: %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_NOFILE: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("%s doesn't exist\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_INVALIDNAME: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("No file extension in %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_NAMETOOLONG: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("%s Has too long of a name\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_ERROR:
+            printf("Unknown error occurred\n");
+            return RETURN_SUCCESS;
     }
 
     return RETURN_ERROR;
