@@ -1,0 +1,4 @@
+FAT32 file system
+
+Being able to call programs from C:\CDOS\BIN\
+-> This will require the ability to make system calls
