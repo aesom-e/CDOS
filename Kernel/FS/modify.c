@@ -101,6 +101,33 @@ ModifyReturnCode fs_CreateDirectory(const char* pathRaw) {
         return MODIFY_FILEEXISTS;
     }
 
+    // Get the name of the new directory
+    char* dirName = strrchr(path, '\\');
+    if(!dirName) {
+        memory_Free(path);
+        return MODIFY_INVALIDPATH;
+    }
+    dirName++;
+
+    // Ensure the name isn't too long
+    if(strlen(dirName) > 8) {
+        memory_Free(path);
+        return MODIFY_NAMETOOLONG;
+    }
+
+    // Construct the new directory which acts in FAT as a file
+    File newDirectory = {0};
+    strcpy(newDirectory.name, dirName);
+    newDirectory.attributes = ATTRIBUTE_DIRECTORY;
+    newDirectory.firstCluster = fs_CreateCluster();
+
+    // Add the file to the parent directory
+    *dirName = 0;
+    if(!fs_AddFileToParentDirectory(path, &newDirectory)) {
+        memory_Free(path);
+        return MODIFY_ERROR;
+    }
+
     memory_Free(path);
     return MODIFY_SUCCESS;
 }
@@ -152,9 +179,67 @@ ModifyReturnCode fs_CreateFile(const char* pathRaw) {
     return MODIFY_SUCCESS;
 }
 
+// Note that this code was essentially copied from fs_RemoveFile because directories are treated as files within FAT
 ModifyReturnCode fs_RemoveDirectory(const char* pathRaw) {
     char* path = fs_GetFullPath(pathRaw);
 
+    // Get the directory that holds the file
+    char* parentPath    = strdup(path);
+    char* lastBackSlash = strrchr(parentPath, '\\');
+    if(!lastBackSlash) {
+        memory_Free(parentPath);
+        memory_Free(path);
+        return MODIFY_INVALIDPATH;
+    }
+
+    // Cut the path off at after the last backslash to get the parent directory
+    // After the directory is found, the path will be put back together so the file name
+    // can be searched for
+    char fileFirstCharacter = *(lastBackSlash+1);
+    *(lastBackSlash+1) = 0;
+
+    Directory dir = fs_OpenDirectory(parentPath);
+    if(!dir.exists) {
+        memory_Free(parentPath);
+        memory_Free(path);
+        return MODIFY_INVALIDPATH;
+    }
+
+    // Put the file name back together
+    *(lastBackSlash+1) = fileFirstCharacter;
+
+    // Locate the dir within the parent directory
+    byte found = 0;
+    word fileIndex;
+    for(fileIndex=0;fileIndex<dir.numFiles;fileIndex++) {
+        if((dir.files[fileIndex].attributes & ATTRIBUTE_DIRECTORY)
+        && strequ(dir.files[fileIndex].name, lastBackSlash+1)) {
+            found = 1;
+            break;
+        }
+    }
+    if(!found) {
+        fs_CloseDirectory(dir);
+        memory_Free(parentPath);
+        memory_Free(path);
+        return MODIFY_NOFILE;
+    }
+
+    // Free the file's cluster
+    File* file = &dir.files[fileIndex];
+    dWord cluster = file->firstCluster;
+    while(cluster < 0x0ffffff8 && cluster) {
+        dWord nextCluster = fs_GetNextCluster(cluster);
+        fs_DeleteCluster(cluster);
+        cluster = nextCluster;
+    }
+
+    // Mark the entry as deleted
+    file->name[0] = 0xe5;
+    fs_UpdateDirectoryEntry(&dir);
+
+    fs_CloseDirectory(dir);
+    memory_Free(parentPath);
     memory_Free(path);
     return MODIFY_SUCCESS;
 }
@@ -162,6 +247,7 @@ ModifyReturnCode fs_RemoveDirectory(const char* pathRaw) {
 ModifyReturnCode fs_RemoveFile(const char* pathRaw) {
     char* path = fs_GetFullPath(pathRaw);
 
+    // Get the directory that holds the file
     char* parentPath    = strdup(path);
     char* lastBackSlash = strrchr(parentPath, '\\');
     if(!lastBackSlash) {

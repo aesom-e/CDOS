@@ -281,18 +281,6 @@ int del(Command command) {
             memory_Free(truePath);
             return RETURN_SUCCESS;
         }
-        case MODIFY_INVALIDNAME: {
-            char* truePath = fs_GetFullPath(command.arguments[1]);
-            printf("No file extension in %s\n", truePath);
-            memory_Free(truePath);
-            return RETURN_SUCCESS;
-        }
-        case MODIFY_NAMETOOLONG: {
-            char* truePath = fs_GetFullPath(command.arguments[1]);
-            printf("%s Has too long of a name\n", truePath);
-            memory_Free(truePath);
-            return RETURN_SUCCESS;
-        }
         case MODIFY_ERROR:
             printf("Unknown error occurred\n");
             return RETURN_SUCCESS;
@@ -307,6 +295,27 @@ int mkdir(Command command) {
         return RETURN_SUCCESS;
     }
 
+    switch(fs_CreateDirectory(command.arguments[1])) {
+        case MODIFY_SUCCESS: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Created %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_INVALIDPATH: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Invalid path: %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_NAMETOOLONG: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("%s Has too long of a name\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+    }
+
     return RETURN_ERROR;
 }
 
@@ -314,6 +323,30 @@ int rmdir(Command command) {
     if(command.numArguments < 2) {
         printf("RMDIR <Directory>\n");
         return RETURN_SUCCESS;
+    }
+
+    switch(fs_RemoveDirectory(command.arguments[1])) {
+        case MODIFY_SUCCESS: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Deleted %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_INVALIDPATH: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("Invalid path: %s\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_NOFILE: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("%s doesn't exist\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_ERROR:
+            printf("Unknown error occurred\n");
+            return RETURN_SUCCESS;
     }
 
     return RETURN_ERROR;
