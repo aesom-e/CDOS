@@ -3,7 +3,9 @@
 #ifndef OS_MEMORY_H
 #define OS_MEMORY_H
 
-void memory_Copy(byte* source, byte* destination, int num);
+void memory_Copy(byte* source, byte* destination, dWord num);
+
+byte memory_Equal(const void* a, const void* b, dWord size);
 
 void memory_Init(void);
 

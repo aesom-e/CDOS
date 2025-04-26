@@ -10,11 +10,19 @@ typedef struct memoryNode {
 
 MemoryNode* memoryStart;
 
-void memory_Copy(byte* source, byte* destination, int num) {
-    int i;
+void memory_Copy(byte* source, byte* destination, dWord num) {
+    dWord i;
     for(i=0;i<num;i++) {
         *(destination+i) = *(source+i);
     }
+}
+
+byte memory_Equal(const void* a, const void* b, dWord size) {
+    dWord i;
+    for(i=0;i<size;i++) {
+        if(*((byte*)a+i) != *((byte*)b+i)) return 0;
+    }
+    return 1;
 }
 
 void memory_Init(void) {

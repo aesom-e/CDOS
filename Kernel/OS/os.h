@@ -2,8 +2,11 @@
 #define OS_H
 
 // This header just includes everything else from OS/
+#include "acpi.h"
+#include "cursor.h"
 #include "delay.h"
 #include "event.h"
+#include "halt.h"
 #include "idt.h"
 #include "irq.h"
 #include "isr.h"
