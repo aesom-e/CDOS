@@ -1,7 +1,7 @@
-#include "../OS/types.h"
-
 #ifndef FS_DISK_H
 #define FS_DISK_H
+
+#include "../OS/types.h"
 
 typedef struct {
     word  bytesPerSector;

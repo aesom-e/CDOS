@@ -10,7 +10,7 @@
 
 volatile dWord tickCounter = 0;
 
-void delay_TimerHandler(Registers* in) {
+static void delay_TimerHandler(Registers* in) {
     tickCounter++;
 }
 

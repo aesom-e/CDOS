@@ -1,8 +1,8 @@
-#include "types.h"
-#include "keyboard.h"
-
 #ifndef OS_EVENT_H
 #define OS_EVENT_H
+
+#include "types.h"
+#include "keyboard.h"
 
 typedef struct {
     KeyboardStruct* keyboard;

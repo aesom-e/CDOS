@@ -1,7 +1,7 @@
-#include "../OS/types.h"
-
 #ifndef FS_WORKINGDIRECTORY_H
 #define FS_WORKINGDIRECTORY_H
+
+#include "../OS/types.h"
 
 extern dWord __WorkingDirectoryCluster;
 

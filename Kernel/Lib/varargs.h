@@ -7,7 +7,7 @@ typedef char* va_list;
 
 #define va_start(list, lastArg) (list = (va_list)(&(lastArg) + 1))
 
-#define va_arg(list, type) (*(type *)((list += _VA_ALIGN(sizeof(type))) - _VA_ALIGN(sizeof(type))))
+#define va_arg(list, type) (*(type*)((list += _VA_ALIGN(sizeof(type))) - _VA_ALIGN(sizeof(type))))
 
 #define va_end(list) (list = NULL)
 

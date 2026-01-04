@@ -18,8 +18,14 @@
 #include "vga.h"
 #include "video.h"
 
+/**
+* \brief Initializes all the different parts of the OS
+*/
 void os_Init(void);
 
+/**
+* \brief Halts the OS
+*/
 _Noreturn void os_Halt(void);
 
 #endif

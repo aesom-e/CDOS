@@ -88,8 +88,15 @@ typedef enum {
     ACPI_SLEEP_SHUTDOWN  = 4  // S5
 } ACPISleepSignal;
 
+/**
+* \brief Initializes ACPI
+*/
 void acpi_Init(void);
 
+/**
+* \brief Sends an \b ACPISleepSignal
+* \param sleepSignal The \b ACPISleepSignal to send
+*/
 void acpi_Sleep(ACPISleepSignal sleepSignal);
 
 #endif

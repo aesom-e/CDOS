@@ -1,8 +1,8 @@
-#include "types.h"
-#include "port.h"
-
 #ifndef OS_VGA_H
 #define OS_VGA_H
+
+#include "types.h"
+#include "port.h"
 
 typedef struct {
     byte x;

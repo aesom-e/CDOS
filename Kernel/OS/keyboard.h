@@ -1,8 +1,8 @@
-#include "registers.h"
-#include "types.h"
-
 #ifndef OS_KEYBOARD_H
 #define OS_KEYBOARD_H
+
+#include "registers.h"
+#include "types.h"
 
 typedef struct {
     byte uppercase;

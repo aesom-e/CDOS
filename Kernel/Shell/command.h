@@ -1,7 +1,7 @@
-#include "../OS/types.h"
-
 #ifndef SHELL_COMMAND_H
 #define SHELL_COMMAND_H
+
+#include "../OS/types.h"
 
 typedef struct {
     char** arguments;

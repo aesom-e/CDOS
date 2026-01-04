@@ -192,6 +192,13 @@ ModifyReturnCode fs_RemoveDirectory(const char* pathRaw) {
         return MODIFY_INVALIDPATH;
     }
 
+    // Check that the directory is empty
+    if(!fs_DirectoryIsEmpty(path)) {
+        memory_Free(parentPath);
+        memory_Free(path);
+        return MODIFY_DIRECTORYNOTEMPTY;
+    }
+
     // Cut the path off at after the last backslash to get the parent directory
     // After the directory is found, the path will be put back together so the file name
     // can be searched for

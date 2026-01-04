@@ -1,8 +1,8 @@
-#include "types.h"
-#include "registers.h"
-
 #ifndef OS_IRQ_H
 #define OS_IRQ_H
+
+#include "types.h"
+#include "registers.h"
 
 #define IRQ0 32
 #define IRQ1 33

@@ -220,7 +220,7 @@ int make(Command command) {
     switch(fs_CreateFile(command.arguments[1])) {
         case MODIFY_SUCCESS: {
             char* truePath = fs_GetFullPath(command.arguments[1]);
-            printf("%s Created\n", truePath);
+            printf("%s created\n", truePath);
             memory_Free(truePath);
             return RETURN_SUCCESS;
         }
@@ -244,7 +244,7 @@ int make(Command command) {
         }
         case MODIFY_NAMETOOLONG: {
             char* truePath = fs_GetFullPath(command.arguments[1]);
-            printf("%s Has too long of a name\n", truePath);
+            printf("%s has too long of a name\n", truePath);
             memory_Free(truePath);
             return RETURN_SUCCESS;
         }
@@ -310,7 +310,7 @@ int mkdir(Command command) {
         }
         case MODIFY_NAMETOOLONG: {
             char* truePath = fs_GetFullPath(command.arguments[1]);
-            printf("%s Has too long of a name\n", truePath);
+            printf("%s has too long of a name\n", truePath);
             memory_Free(truePath);
             return RETURN_SUCCESS;
         }
@@ -341,6 +341,12 @@ int rmdir(Command command) {
         case MODIFY_NOFILE: {
             char* truePath = fs_GetFullPath(command.arguments[1]);
             printf("%s doesn't exist\n", truePath);
+            memory_Free(truePath);
+            return RETURN_SUCCESS;
+        }
+        case MODIFY_DIRECTORYNOTEMPTY: {
+            char* truePath = fs_GetFullPath(command.arguments[1]);
+            printf("%s is not empty\n", truePath);
             memory_Free(truePath);
             return RETURN_SUCCESS;
         }

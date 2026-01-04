@@ -1,7 +1,7 @@
-#include "types.h"
-
 #ifndef OS_REGISTERS_H
 #define OS_REGISTERS_H
+
+#include "types.h"
 
 typedef struct {
     dWord ds, edi, esi, ebp, ebx, edx, ecx, eax;

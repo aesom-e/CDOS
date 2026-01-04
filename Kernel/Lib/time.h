@@ -1,7 +1,7 @@
-#include "../OS/types.h"
-
 #ifndef LIB_TIME_H
 #define LIB_TIME_H
+
+#include "../OS/types.h"
 
 // Stored in half-hours
 typedef enum {
