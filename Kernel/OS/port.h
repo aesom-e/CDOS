@@ -1,7 +1,7 @@
-#include "types.h"
-
 #ifndef OS_PORT_H
 #define OS_PORT_H
+
+#include "types.h"
 
 byte port_ByteIn(word port);
 

@@ -1,7 +1,7 @@
-#include "registers.h"
-
 #ifndef OS_ISR_H
 #define OS_ISR_H
+
+#include "registers.h"
 
 // Define the symbols in isr.asm for the compiler
 extern void isr0(void);

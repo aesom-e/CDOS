@@ -1,8 +1,8 @@
-#include "../Constants/OSConstants.h"
-#include "types.h"
-
 #ifndef OS_IDT_H
 #define OS_IDT_H
+
+#include "../Constants/OSConstants.h"
+#include "types.h"
 
 typedef struct {
     word lowOffset;

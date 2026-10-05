@@ -22,8 +22,6 @@ byte input_End(EventState* state) {
     return 0;
 }
 
-// INPUT IS VERY BROKEN
-#include "../Lib/print.h"
 byte input_Key(EventState* state) {
     // If the user tries to type more keys than allowed, stop it
     if(inputIndex == inputLen-1 && state->stateDetails != '\b') return 1;

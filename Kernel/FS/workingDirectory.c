@@ -26,9 +26,6 @@ char* fs_GetFullPath(const char* relativePathRaw) {
         if(relativePath[i] == '/') relativePath[i] = '\\';
     }
 
-    // Check if the relativePath begins with a '\'
-
-
     // Copy the path over
     char* path;
     if(relativePath[0] == '\\') {

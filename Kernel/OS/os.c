@@ -7,6 +7,7 @@ void os_Init(void) {
     delay_Init();
     keyboard_Init();
     memory_Init();
+    acpi_Init();
 }
 
 _Noreturn void os_Halt(void) {
